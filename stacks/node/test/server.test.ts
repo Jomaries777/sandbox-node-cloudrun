@@ -46,6 +46,18 @@ describe("server", () => {
     expect(await res.json()).toEqual({ message: "hello" });
   });
 
+  // Regression (M2 step 6b): "/" returned 500 after its first call, which CI
+  // and the pre-traffic smoke missed and the live checks caught.
+  it("GET / keeps returning 200 on repeated calls", async () => {
+    activeServer = createServer();
+    const baseUrl = await listen(activeServer);
+
+    for (let i = 0; i < 3; i++) {
+      const res = await fetch(`${baseUrl}/`);
+      expect(res.status).toBe(200);
+    }
+  });
+
   it("GET /health returns default dev version when APP_VERSION is unset", async () => {
     delete process.env.APP_VERSION;
     activeServer = createServer();
