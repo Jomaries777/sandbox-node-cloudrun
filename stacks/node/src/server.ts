@@ -19,10 +19,18 @@ function sendJson(
 }
 
 export function createServer(): Server {
+  // Criterion 5 test fault (M2 step 6b): "/" fails after its first call, so
+  // CI and the pre-traffic smoke pass but the live checks fail and revert.
+  let rootCalls = 0;
   return createHttpServer((req: IncomingMessage, res: ServerResponse) => {
     const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
 
     if (req.method === "GET" && pathname === "/") {
+      rootCalls += 1;
+      if (rootCalls > 1) {
+        sendJson(res, 500, { error: "degraded" });
+        return;
+      }
       sendJson(res, 200, { message: "hello" });
       return;
     }
