@@ -3,6 +3,9 @@
 Made from [Jomaries777/template-repo-ci](https://github.com/Jomaries777/template-repo-ci).
 Stack: `node` (`stacks/node/`). Deploy target: `cloud-run` (`deploy.yml`).
 
+The service answers `GET /` and `GET /health`. Don't add routes that end in
+`z` (such as `/healthz`): Cloud Run reserves some of them.
+
 ## Work
 
 Every change starts as `intent/<id>-<slug>/intent.md` (run `/intent` in Claude
